@@ -126,7 +126,7 @@ app.post("/users/token", (req, res) => {
   if (req.body.token === null) {
     res.status(401).send("Refresh Token Required");
   } else {
-    if (!REFRESHTOKENS.find(({ token }) => token === req.body.token)) {
+    if (!REFRESHTOKENS.includes(req.body.token)) {
       res.status(403).send("Invalid Refresh Token");
     }
     jwt.verify(req.body.token, SECRET_TOKEN, (err, user) => {
@@ -164,5 +164,120 @@ app.post("/users/logout", (req, res) => {
 /*
      Get users DB (admin only)
 */
+app.get("/api/v1/users", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token === null) {
+    res.status(401).send("Access Token Required");
+  } else {
+    jwt.verify(token, SECRET_TOKEN, (err, user) => {
+      if (err) {
+        res.status(403).send("Invalid Access Token");
+      } else {
+        let currentUser = USERS.find(({ email }) => email === user.email);
+        if (currentUser.isAdmin) {
+          res.status(200).json({ USERS: USERS });
+        } else {
+          res.status(403).send("Access Denied");
+        }
+      }
+    });
+  }
+});
+
+/*
+    returns an array of all APIs and endpoints. 
+    (sends only the available options for 
+    the currnet logged user premissions)
+*/
+app.options("/", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token === null) {
+    res
+      .status(200)
+      .set({ Allow: "OPTIONS, GET, POST" })
+      .json([OPTIONSMETHOD[0], OPTIONSMETHOD[1]]);
+  } else {
+    jwt.verify(token, SECRET_TOKEN, (err, user) => {
+      if (err) {
+        res
+          .status(200)
+          .set({ Allow: "OPTIONS, GET, POST" })
+          .json([
+            OPTIONSMETHOD[0],
+            OPTIONSMETHOD[1],
+            OPTIONSMETHOD[2],
+            OPTIONSMETHOD[3],
+          ]);
+      } else {
+        let currentUser = USERS.find(({ email }) => email === user.email);
+        if (currentUser.isAdmin) {
+          res
+            .status(200)
+            .set({ Allow: "OPTIONS, GET, POST" })
+            .json(OPTIONSMETHOD);
+        } else {
+          res
+            .status(200)
+            .set({ Allow: "OPTIONS, GET, POST" })
+            .json([
+              OPTIONSMETHOD[0],
+              OPTIONSMETHOD[1],
+              OPTIONSMETHOD[2],
+              OPTIONSMETHOD[3],
+              OPTIONSMETHOD[4],
+              OPTIONSMETHOD[5],
+            ]);
+        }
+      }
+    });
+  }
+});
 
 module.exports = { app };
+
+let OPTIONSMETHOD = [
+  {
+    method: "post",
+    path: "/users/register",
+    description: "Register, required: email, user, password",
+    example: { email: "user@email.com", name: "user", password: "password" },
+  },
+  {
+    method: "post",
+    path: "/users/login",
+    description: "Login, required: valid email and password",
+    example: { email: "user@email.com", password: "password" },
+  },
+  {
+    method: "post",
+    path: "/users/token",
+    description: "Renew access token, required: valid refresh token",
+    example: { token: "*Refresh Token*" },
+  },
+  {
+    method: "post",
+    path: "/users/tokenValidate",
+    description: "Access Token Validation, required: valid access token",
+    example: { authorization: "Bearer *Access Token*" },
+  },
+  {
+    method: "get",
+    path: "/api/v1/information",
+    description: "Access user's information, required: valid access token",
+    example: { authorization: "Bearer *Access Token*" },
+  },
+  {
+    method: "post",
+    path: "/users/logout",
+    description: "Logout, required: access token",
+    example: { token: "*Refresh Token*" },
+  },
+  {
+    method: "get",
+    path: "/users/all",
+    description: "Get users DB, required: Valid access token of admin user",
+    example: { authorization: "Bearer *Access Token*" },
+  },
+];

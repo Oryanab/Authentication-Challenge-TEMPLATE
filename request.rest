@@ -22,3 +22,40 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9yeWFuQ
 
 {
 }
+
+###
+GET http://localhost:3000/api/v1/information
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9yeWFuQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoib3J5YW4iLCJpYXQiOjE2MzgyODk3ODYsImV4cCI6MTYzODI4OTg0Nn0.dUaFMcZYiILzZHsGXOAsCn9LlaMXzhUMF4wBBCT0Zks
+
+{
+}
+
+###
+POST http://localhost:3000/users/token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9yeWFuQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoib3J5YW4iLCJpYXQiOjE2MzgyOTMwMzh9.koFowiXrogw15wjJ60NObwHatTUSkEpBG2UUWkOKIHI"
+}
+
+###
+POST http://localhost:3000/users/logout
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9yeWFuQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoib3J5YW4iLCJpYXQiOjE2MzgyOTMyNzB9.Sx6m5BY_9AhHCLhWM8LfG6sAZqEgsVvKm50kVnJjOHc"
+}
+
+###
+GET http://localhost:3000/api/v1/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9yeWFuQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoib3J5YW4iLCJpYXQiOjE2MzgyOTMzODMsImV4cCI6MTYzODI5MzQ0M30.wc4XrFtgBlE5JXrB_tc1aDKadk1cXwFMPznP6N0tO5s
+
+{
+}
+
+###
+OPTIONS  http://localhost:3000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9yeWFuQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoib3J5YW4iLCJpYXQiOjE2MzgyOTUwNDIsImV4cCI6MTYzODI5NTEwMn0.fpgfY6zCNKhYbTP0KBHfnHnrxlDOUrt5mcIQEGsFUN0
+
+{
+}
