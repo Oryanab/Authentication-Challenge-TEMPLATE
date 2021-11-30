@@ -4,6 +4,7 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const bycrypt = require("bcrypt");
 const express = require("express");
+
 const app = express();
 
 SECRET_TOKEN =
@@ -24,7 +25,7 @@ const {
   encryptPassword,
 } = require("./controllers");
 
-app.use(notFoundEndpointHandler);
+// app.use(notFoundEndpointHandler);
 
 const USERS = returnDataBase()["USERS"];
 const INFORMATION = returnDataBase()["INFORMATION"];
@@ -34,36 +35,39 @@ const REFRESHTOKENS = returnDataBase()["REFRESHTOKENS"];
      sign up to the server
 */
 
-app.post("/users/register", RegisterUserAlreadyExists, async (req, res) => {
-  USERS.push({
-    email: req.body.email,
-    name: req.body.name,
-    password: await bycrypt.hash(req.body.password, 10),
-    isAdmin: false,
-  });
-  INFORMATION.push({
-    email: req.body.email,
-    info: req.body.name,
-  });
-  saveDataBase(USERS, INFORMATION, REFRESHTOKENS);
-  res.status(201).send("Register Success");
+app.post("/users/register", async (req, res) => {
+  console.log(req.body);
+  if (USERS.find(({ email }) => email === req.body.email)) {
+    res.status(409).send("user already exists");
+  } else {
+    USERS.push({
+      email: req.body.email,
+      name: req.body.name,
+      password: await bycrypt.hash(req.body.password, 10),
+      isAdmin: false,
+    });
+    INFORMATION.push({
+      email: req.body.email,
+      info: req.body.name,
+    });
+    saveDataBase(USERS, INFORMATION, REFRESHTOKENS);
+    res.status(201).send("Register Success");
+  }
 });
 
 /*
      login to the server
 */
-app.post("/users/login", LoginUserNotExists, (req, res) => {
+app.post("/users/login", (req, res) => {
   let currentUser = USERS.find(({ email }) => email === req.body.email);
   bycrypt
     .compare(req.body.password, currentUser.password)
     .then((success) => {
       loggedUser = { email: req.body.email, password: req.body.password };
       const accessToken = jwt.sign(loggedUser, SECRET_TOKEN, {
-        expiresIn: "1m",
+        expiresIn: "10s",
       });
-
       const refreshToken = jwt.sign(loggedUser, SECRET_TOKEN);
-
       REFRESHTOKENS.push(refreshToken);
       saveDataBase(USERS, INFORMATION, REFRESHTOKENS);
       res.status(200).json({
@@ -235,7 +239,7 @@ app.options("/", (req, res) => {
   }
 });
 
-module.exports = { app };
+module.exports = app;
 
 let OPTIONSMETHOD = [
   {

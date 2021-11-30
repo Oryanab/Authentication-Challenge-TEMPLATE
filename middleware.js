@@ -37,7 +37,7 @@ function notFoundEndpointHandler(req, res, next) {
 function RegisterUserAlreadyExists(req, res, next) {
   let users = returnDataBase()["USERS"];
   if (
-    !users.find(({ name }) => name === req.body.name) &&
+    !users.find(({ name }) => name === req.body.name) ||
     !users.find(({ email }) => email === req.body.email)
   ) {
     next();

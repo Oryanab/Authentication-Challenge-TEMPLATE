@@ -1,11 +1,13 @@
-POST http://localhost:3000/users/register
+POST http://localhost:8080/users/register
 Content-Type: application/json
 
 {
-    "email": "oryan@gmail.com",
-    "name": "oryan",
-    "password": "oryan"
+    "email": "admin@email.com",
+    "name": "admin",
+    "password": "Rc123456!" 
 }
+
+
 
 ###
 POST http://localhost:3000/users/login
