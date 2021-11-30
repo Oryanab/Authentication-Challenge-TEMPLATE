@@ -1,0 +1,24 @@
+POST http://localhost:3000/users/register
+Content-Type: application/json
+
+{
+    "email": "oryan@gmail.com",
+    "name": "oryan",
+    "password": "oryan"
+}
+
+###
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "email": "oryan@gmail.com",
+    "password": "oryan"
+}
+
+###
+POST http://localhost:3000/users/tokenValidate
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im9yeWFuQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoib3J5YW4iLCJpYXQiOjE2MzgyODkxNDEsImV4cCI6MTYzODI4OTIwMX0.gg-47xL9rgUOzCVnn3QOfzM6k53JoHDjl3sOyo1ZR04
+
+{
+}

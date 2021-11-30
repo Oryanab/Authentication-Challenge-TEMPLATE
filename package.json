@@ -1,10 +1,10 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Welcome to the <b>Best Authentication Challenge</b> ever existed.<br>\r This challenge's goal is to learn and practice building a *User Authentication and Authorization System* in your project.<br>\r In order to pass this challenge successfully you should follow all of the requirements detailed below.<br>",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/jest",
+    "test": "jest",
     "dev": "nodemon index.js",
     "start": ""
   },
@@ -21,5 +21,16 @@
   "devDependencies": {
     "jest": "^24.9.0",
     "supertest": "^4.0.2"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oryanab/Authentication-Challenge-TEMPLATE.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Oryanab/Authentication-Challenge-TEMPLATE/issues"
+  },
+  "homepage": "https://github.com/Oryanab/Authentication-Challenge-TEMPLATE#readme"
 }
