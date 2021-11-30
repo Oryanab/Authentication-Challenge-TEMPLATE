@@ -79,6 +79,9 @@ app.post("/users/login", LoginUserNotExists, (req, res) => {
     });
 });
 
+/*
+     Access Token Validation
+*/
 app.post("/users/tokenValidate", (req, res) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -94,5 +97,72 @@ app.post("/users/tokenValidate", (req, res) => {
     });
   }
 });
+
+/*
+     Access user's information
+*/
+
+app.get("/api/v1/information", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token === null) {
+    res.status(401).send("Access Token Required");
+  } else {
+    jwt.verify(token, SECRET_TOKEN, (err, user) => {
+      if (err) {
+        res.status(403).send("Invalid Access Token");
+      } else {
+        let userInfo = INFORMATION.find(({ email }) => email === user.email);
+        res.status(200).json(userInfo);
+      }
+    });
+  }
+});
+
+/*
+    Renew access token,
+*/
+app.post("/users/token", (req, res) => {
+  if (req.body.token === null) {
+    res.status(401).send("Refresh Token Required");
+  } else {
+    if (!REFRESHTOKENS.find(({ token }) => token === req.body.token)) {
+      res.status(403).send("Invalid Refresh Token");
+    }
+    jwt.verify(req.body.token, SECRET_TOKEN, (err, user) => {
+      if (err) {
+        res.status(403).send("Invalid Refresh Token");
+      } else {
+        const accessToken = jwt.sign(user, SECRET_TOKEN, {
+          expiresIn: "1m",
+        });
+        res.status(200).json({ accessToken: accessToken });
+      }
+    });
+  }
+});
+
+/*
+    Logout Session
+*/
+app.post("/users/logout", (req, res) => {
+  if (req.body.token === null) {
+    res.status(400).send("Refresh Token Required");
+  } else {
+    jwt.verify(req.body.token, SECRET_TOKEN, (err, user) => {
+      if (err) {
+        res.status(400).send("Invalid Refresh Token");
+      } else {
+        REFRESHTOKENS.splice(REFRESHTOKENS.indexOf(req.body.token), 1);
+        saveDataBase(USERS, INFORMATION, REFRESHTOKENS);
+        res.status(200).send("User Logged Out Successfully");
+      }
+    });
+  }
+});
+
+/*
+     Get users DB (admin only)
+*/
 
 module.exports = { app };
