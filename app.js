@@ -27,16 +27,30 @@ const {
 
 // app.use(notFoundEndpointHandler);
 
-const USERS = returnDataBase()["USERS"];
-const INFORMATION = returnDataBase()["INFORMATION"];
-const REFRESHTOKENS = returnDataBase()["REFRESHTOKENS"];
-
+// const USERS = returnDataBase()["USERS"];
+// const INFORMATION = returnDataBase()["INFORMATION"];
+// const REFRESHTOKENS = returnDataBase()["REFRESHTOKENS"];
+const USERS = [
+  {
+    email: "admin@email.com",
+    name: "admin",
+    password: "Rc123456!",
+    isAdmin: true,
+  },
+  {
+    email: "oryan@email.com",
+    name: "oryan",
+    password: "oryan",
+    isAdmin: false,
+  },
+];
+const INFORMATION = [{ email: "oryan@email.com", info: "admin" }];
+const REFRESHTOKENS = [];
 /*
      sign up to the server
 */
 
 app.post("/users/register", async (req, res) => {
-  console.log(req.body);
   if (USERS.find(({ email }) => email === req.body.email)) {
     res.status(409).send("user already exists");
   } else {
@@ -50,6 +64,7 @@ app.post("/users/register", async (req, res) => {
       email: req.body.email,
       info: req.body.name,
     });
+
     saveDataBase(USERS, INFORMATION, REFRESHTOKENS);
     res.status(201).send("Register Success");
   }
@@ -127,18 +142,20 @@ app.get("/api/v1/information", (req, res) => {
     Renew access token,
 */
 app.post("/users/token", (req, res) => {
-  if (req.body.token === null) {
+  if (req.body.token === null || !req.body.token) {
     res.status(401).send("Refresh Token Required");
   } else {
     if (!REFRESHTOKENS.includes(req.body.token)) {
+      console.log("i got error at checking if there token /users/token");
       res.status(403).send("Invalid Refresh Token");
     }
     jwt.verify(req.body.token, SECRET_TOKEN, (err, user) => {
       if (err) {
+        console.log("i got error at verify /users/token");
         res.status(403).send("Invalid Refresh Token");
       } else {
         const accessToken = jwt.sign(user, SECRET_TOKEN, {
-          expiresIn: "1m",
+          expiresIn: "10s",
         });
         res.status(200).json({ accessToken: accessToken });
       }
@@ -179,10 +196,11 @@ app.get("/api/v1/users", (req, res) => {
         res.status(403).send("Invalid Access Token");
       } else {
         let currentUser = USERS.find(({ email }) => email === user.email);
-        if (currentUser.isAdmin) {
+        if (currentUser["isAdmin"]) {
           res.status(200).json({ USERS: USERS });
         } else {
-          res.status(403).send("Access Denied");
+          console.log("Access Denied for admin");
+          res.status(403).send("Invalid Access Token");
         }
       }
     });
