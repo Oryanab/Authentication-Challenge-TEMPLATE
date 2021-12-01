@@ -45,7 +45,7 @@ const USERS = [
   },
 ];
 const INFORMATION = [{ email: "oryan@email.com", info: "admin" }];
-const REFRESHTOKENS = [];
+const REFRESHTOKENS = returnDataBase()["REFRESHTOKENS"];
 /*
      sign up to the server
 */
@@ -146,17 +146,19 @@ app.post("/users/token", (req, res) => {
     res.status(401).send("Refresh Token Required");
   } else {
     if (!REFRESHTOKENS.includes(req.body.token)) {
-      console.log("i got error at checking if there token /users/token");
       res.status(403).send("Invalid Refresh Token");
     }
     jwt.verify(req.body.token, SECRET_TOKEN, (err, user) => {
       if (err) {
-        console.log("i got error at verify /users/token");
         res.status(403).send("Invalid Refresh Token");
       } else {
-        const accessToken = jwt.sign(user, SECRET_TOKEN, {
-          expiresIn: "10s",
-        });
+        const accessToken = jwt.sign(
+          { email: user.email, password: user.password },
+          SECRET_TOKEN,
+          {
+            expiresIn: "10s",
+          }
+        );
         res.status(200).json({ accessToken: accessToken });
       }
     });
@@ -199,7 +201,6 @@ app.get("/api/v1/users", (req, res) => {
         if (currentUser["isAdmin"]) {
           res.status(200).json({ USERS: USERS });
         } else {
-          console.log("Access Denied for admin");
           res.status(403).send("Invalid Access Token");
         }
       }
